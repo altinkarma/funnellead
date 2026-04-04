@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  basePath: "/funnel",
+  /* no basePath needed - running on subdomain root */
 };
 
 export default nextConfig;
