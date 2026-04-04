@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+:root {
+  --navy: #0D297B;
+  --navy-deep: #201652;
+  --green: #01BB77;
+}
+
+body {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}

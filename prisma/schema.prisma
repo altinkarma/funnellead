@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Lead {
+  id                String   @id @default(cuid())
+  sessionId         String   @unique
+  phone             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  ageGroup          String?
+  familyType        String?
+  lifestyle         String?  // JSON array stored as string
+  insurance         String?
+  risks             String?  // JSON array stored as string
+  chronicCondition  String?
+  pregnancyStatus   String?
+  estimatedSavings  Int?
+
+  status            String   @default("new") // new, contacted, converted, lost
+  notes             String?
+}
+
+model FunnelEvent {
+  id        String   @id @default(cuid())
+  sessionId String
+  step      String   // s0, s1, s2, s3, s4, s5, s6, sLoad, sPhone, sResult, sSuccess
+  action    String?  // e.g. "select:tek", "select:31-45"
+  createdAt DateTime @default(now())
+}
+
+model Firm {
+  id        String  @id @default(cuid())
+  name      String
+  package   String
+  isActive  Boolean @default(true)
+  premiums  String  // JSON: {"0-1":11135,"11-18":5790,...}
+  updatedAt DateTime @updatedAt
+}
+
+model Settings {
+  id              String @id @default("global")
+  familyDiscount  Float  @default(0.10)
+  newBizDiscount  Float  @default(0.05)
+  updatedAt       DateTime @updatedAt
+}
+
+model FunnelScreen {
+  id           String   @id          // s0, s1, s2, ... sResult, sSuccess
+  stepLabel    String?               // "Soru 1 / 7"
+  title        String                // Ana başlık
+  subtitle     String?               // Alt açıklama
+  hint         String?               // İpucu metni
+  selectMode   String   @default("single") // single, multi, none
+  buttonText   String?               // "Devam Et →"
+  sortOrder    Int      @default(0)
+  isActive     Boolean  @default(true)
+  extraContent String?               // JSON - ekrana özel ek içerik
+  updatedAt    DateTime @updatedAt
+
+  options      FunnelOption[]
+}
+
+model FunnelOption {
+  id          String   @id @default(cuid())
+  screenId    String
+  icon        String?               // Emoji
+  label       String                // Başlık
+  description String?               // Alt metin
+  value       String                // Kod değeri: "tek", "31-45"
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  style       String?               // JSON - özel stil
+  condition   String?               // JSON - gösterilme koşulu
+  updatedAt   DateTime @updatedAt
+
+  screen      FunnelScreen @relation(fields: [screenId], references: [id])
+}
