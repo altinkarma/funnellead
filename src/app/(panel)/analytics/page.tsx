@@ -69,7 +69,7 @@ export default async function AnalyticsPage() {
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Funnel Analytics</h1>
-        <p className="text-sm text-gray-500 mt-1">Adım bazında dönüşüm ve drop-off analizi</p>
+        <p className="text-sm text-gray-500 mt-1">Adım bazında dönüşüm ve drop-off analizi · 30+&apos;dan fazla sigorta firmasından teklif veriyoruz</p>
       </div>
 
       {/* Funnel Visualization */}

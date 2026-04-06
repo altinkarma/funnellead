@@ -88,7 +88,7 @@ export default function FirmsPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Firma & Fiyat Yönetimi</h1>
         <p className="text-sm text-gray-500 mt-1">
-          {firms.length} firma kayıtlı, {firms.filter((f) => f.isActive).length} aktif
+          {firms.length} firma kayıtlı, {firms.filter((f) => f.isActive).length} aktif · 30+&apos;dan fazla sigorta firmasından teklif veriyoruz (pasif firmalar teklif sayfasında gösterilmez)
         </p>
       </div>
 

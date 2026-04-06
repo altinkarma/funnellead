@@ -38,12 +38,14 @@ export const STEP_LABELS: Record<string, string> = {
   s5: "Risk Profili",
   s6: "Kronik/Doğum",
   sLoad: "Yükleniyor",
-  sPhone: "Telefon",
   sResult: "Sonuç",
   sSuccess: "Başarılı",
 };
 
-export const FUNNEL_STEPS = ["s0", "s1", "s2", "s3", "s4", "s5", "s6", "sPhone", "sResult", "sSuccess"];
+export const FUNNEL_STEPS = ["s0", "s1", "s2", "s3", "s4", "s5", "s6", "sLoad", "sResult", "sSuccess"];
+
+// Her yerde tutarlı kullanılması gereken marka cümlesi.
+export const BRAND_TAGLINE = "30+'dan fazla sigorta firmasından teklif veriyoruz";
 
 export const STATUS_LABELS: Record<string, string> = {
   new: "Yeni",

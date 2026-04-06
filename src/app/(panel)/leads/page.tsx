@@ -80,7 +80,7 @@ export default function LeadsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Lead Yönetimi</h1>
-          <p className="text-sm text-gray-500 mt-1">{leads.length} lead listeleniyor</p>
+          <p className="text-sm text-gray-500 mt-1">{leads.length} lead listeleniyor · 30+&apos;dan fazla sigorta firmasından teklif veriyoruz</p>
         </div>
         <button
           onClick={exportCSV}

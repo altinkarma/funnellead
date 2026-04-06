@@ -157,7 +157,7 @@ export default function FunnelEditorPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Funnel Editör</h1>
-          <p className="text-sm text-gray-500 mt-1">Tüm ekranları, soruları ve seçenekleri düzenleyin</p>
+          <p className="text-sm text-gray-500 mt-1">Tüm ekranları, soruları ve seçenekleri düzenleyin · 30+&apos;dan fazla sigorta firmasından teklif veriyoruz</p>
         </div>
         {saveMsg && (
           <span className={`text-sm font-semibold ${saveMsg === "Kaydedildi!" ? "text-green-600" : "text-red-600"}`}>

@@ -83,12 +83,12 @@ async function main() {
     {
       id: "s0", sortOrder: 0, selectMode: "none",
       title: "TSS ile yılda ne kadar tasarruf edersiniz?",
-      subtitle: "6 hızlı soru yanıtlayın. Kişiselleştirilmiş tasarruf analizinizi ve size uygun 10+ sigorta firması teklifini görün.",
+      subtitle: "6 hızlı soru yanıtlayın. 30+'dan fazla sigorta firmasından teklif veriyoruz — size özel tasarruf analizinizi anında görün.",
       buttonText: "Hesaplamaya Başla →",
       extraContent: JSON.stringify({
         stats: [
           { value: "₺18K+", label: "Ort. tasarruf" },
-          { value: "10+", label: "Sigorta firması" },
+          { value: "30+", label: "Sigorta firması" },
           { value: "4.9★", label: "Kullanıcı puanı" },
         ],
         trustItems: ["Kredi kartı gerekmez", "Veriler güvende", "Bağlayıcı değil"],
@@ -202,26 +202,8 @@ async function main() {
         steps: [
           "Yaş & aile profili analiz ediliyor",
           "Harcama verileri hesaplanıyor",
-          "10+ sigorta firması karşılaştırılıyor",
+          "30+'dan fazla sigorta firmasından teklif veriyoruz — hepsi karşılaştırılıyor",
           "Size özel tasarruf raporu oluşturuluyor",
-        ],
-      }),
-    },
-    {
-      id: "sPhone", sortOrder: 10, selectMode: "none",
-      title: "Teklifleri görmek için numara doğrulama",
-      subtitle: "10+ sigorta firmasının fiyat tekliflerini ve kişisel tasarruf raporunuzu WhatsApp ile göndermek için telefon numaranızı doğrulayın.",
-      buttonText: "Doğrulama Kodu Gönder 📲",
-      extraContent: JSON.stringify({
-        trustItems: ["🔒 Numara paylaşılmaz", "📵 Rıza dışı aranmazsınız"],
-        otpTitle: "Doğrulama kodunu girin",
-        otpDesc: "SMS veya WhatsApp ile gönderilen 4 haneli kodu girin.",
-        otpButton: "Kodu Onayla & Raporu Gör ✅",
-        countryCodes: [
-          { code: "+90", flag: "🇹🇷" },
-          { code: "+49", flag: "🇩🇪" },
-          { code: "+44", flag: "🇬🇧" },
-          { code: "+1", flag: "🇺🇸" },
         ],
       }),
     },
@@ -250,9 +232,9 @@ async function main() {
         urgencyText: "Bu analiz 24 saat geçerlidir. Bugün başvuranlar 3 ay ücretsiz ek teminat kazanır.",
         waSection: {
           title: "📲 13 Firmadan WhatsApp'a Teklif Al",
-          desc: "Kişisel tasarruf raporunuzu ve 13 sigorta firmasının fiyat tekliflerini WhatsApp üzerinden 2 saat içinde alın. Tamamen ücretsiz, bağlayıcı değil.",
+          desc: "30+'dan fazla sigorta firmasından teklif veriyoruz. Kişisel tasarruf raporunuzu ve anlaşmalı firmaların fiyat tekliflerini WhatsApp üzerinden 2 saat içinde alın. Tamamen ücretsiz, bağlayıcı değil.",
           benefits: [
-            "Doğa, Zurich, Demir, Ana, Ankara ve 8+ firma fiyatı",
+            "Doğa, Zurich, Demir, Ana, Ankara ve 25+ firma fiyatı",
             "Kişisel tasarruf raporu PDF olarak iletilir",
             "Uzman danışman size özel plan önerir",
             "Ücretsiz, bağlayıcı değil, iptal garantili",
@@ -279,13 +261,13 @@ async function main() {
     {
       id: "sSuccess", sortOrder: 12, selectMode: "none",
       title: "Başvurunuz Alındı!",
-      subtitle: "WhatsApp danışmanımız 2 saat içinde size ulaşacak. Kişisel tasarruf raporunuz ve 10+ firma teklifi hazırlanıyor.",
+      subtitle: "WhatsApp danışmanımız 2 saat içinde size ulaşacak. 30+'dan fazla sigorta firmasından teklif veriyoruz — kişisel tasarruf raporunuz ve firma teklifleri hazırlanıyor.",
       extraContent: JSON.stringify({
         badge: "TİMURLAR SİGORTA PLUS",
         nextSteps: [
           "📱 WhatsApp danışman araması (1-2 saat)",
           "📧 Kişisel rapor PDF olarak iletilir",
-          "📋 12 firma fiyat karşılaştırması",
+          "📋 30+'dan fazla sigorta firmasından teklif karşılaştırması",
           "✅ Tamamen ücretsiz ve bağlayıcı değil",
         ],
       }),
