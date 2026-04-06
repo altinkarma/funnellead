@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const NAV = [
   { href: "/", label: "Dashboard", icon: "📊" },
@@ -14,6 +14,13 @@ const NAV = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  async function handleLogout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/login");
+    router.refresh();
+  }
 
   return (
     <aside className="w-64 bg-[#0D297B] min-h-screen text-white flex flex-col shrink-0">
@@ -26,6 +33,9 @@ export default function Sidebar() {
             <div className="font-bold text-sm tracking-tight">Timurlar Sigorta</div>
             <div className="text-[10px] text-white/50 font-semibold tracking-wider uppercase">
               Analytics Panel
+            </div>
+            <div className="text-[9px] text-white/40 mt-0.5 leading-tight">
+              30+&apos;dan fazla sigorta firmasından teklif veriyoruz
             </div>
           </div>
         </div>
@@ -49,8 +59,17 @@ export default function Sidebar() {
           );
         })}
       </nav>
-      <div className="px-5 py-4 border-t border-white/10 text-[11px] text-white/30">
-        TSS Funnel v3.4
+      <div className="px-3 py-3 border-t border-white/10 space-y-2">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white transition-all"
+        >
+          <span className="text-base">🚪</span>
+          Çıkış yap
+        </button>
+        <div className="px-2 text-[10px] text-white/30 leading-tight">
+          TSS Funnel v3.5 · 30+&apos;dan fazla sigorta firmasından teklif veriyoruz
+        </div>
       </div>
     </aside>
   );

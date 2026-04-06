@@ -44,7 +44,7 @@ export default async function DashboardPage() {
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-sm text-gray-500 mt-1">TSS Funnel genel bakış</p>
+        <p className="text-sm text-gray-500 mt-1">TSS Funnel genel bakış · 30+&apos;dan fazla sigorta firmasından teklif veriyoruz</p>
       </div>
 
       {/* KPI Cards */}

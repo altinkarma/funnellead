@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useCallback } from "react";
 
 interface FunnelOption {
   id: string;
@@ -41,7 +41,8 @@ interface Props {
 }
 
 const QUESTION_SCREENS = ["sPreg", "s1", "s2", "s3", "s4", "s5", "s6"];
-const FLOW = ["s0", "sPreg", "s1", "s2", "s3", "s4", "s5", "s6", "sLoad", "sPhone", "sResult", "sSuccess"];
+// NOT: sPhone adımı kaldırıldı — loading bittikten sonra doğrudan sonuç ekranı gösterilir.
+const FLOW = ["s0", "sPreg", "s1", "s2", "s3", "s4", "s5", "s6", "sLoad", "sResult", "sSuccess"];
 
 const FIRM_COLORS: Record<string, { bg: string; fg: string }> = {
   "Doğa Sigorta": { bg: "#F3E5F5", fg: "#4A148C" },
@@ -63,19 +64,13 @@ export default function FunnelClient({ screens, firms, settings }: Props) {
   const [currentScreen, setCurrentScreen] = useState("s0");
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [multiSel, setMultiSel] = useState<Set<string>>(new Set());
-  const [phone, setPhone] = useState("");
-  const [countryCode, setCountryCode] = useState("+90");
-  const [otp, setOtp] = useState(["", "", "", ""]);
-  const [otpSent, setOtpSent] = useState(false);
   const [loadStep, setLoadStep] = useState(-1);
   const [savings, setSavings] = useState(0);
-  const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const sessionId = useRef(`TSS-${Date.now()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`);
 
   const screenMap = new Map(screens.map((s) => [s.id, s]));
   const screen = screenMap.get(currentScreen);
 
-  const stepIndex = FLOW.indexOf(currentScreen);
   const questionSteps = FLOW.filter((id) => QUESTION_SCREENS.includes(id));
   const currentQuestionIdx = questionSteps.indexOf(currentScreen);
   const progressPct = currentQuestionIdx >= 0 ? Math.round(((currentQuestionIdx + 1) / questionSteps.length) * 100) : 0;
@@ -155,42 +150,11 @@ export default function FunnelClient({ screens, firms, settings }: Props) {
             },
           }),
         }).catch(() => {});
-        setTimeout(() => go("sPhone"), 600);
+        // Telefon doğrulama adımı kaldırıldı — analiz sonucu doğrudan ekrana gelir.
+        setTimeout(() => go("sResult"), 600);
       }
     }, 700);
   }, [answers]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  function sendOtp() {
-    if (phone.replace(/\s/g, "").length < 10) return;
-    setOtpSent(true);
-    // Send phone to lead
-    fetch("/api/webhook", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        type: "lead",
-        sessionId: sessionId.current,
-        data: { phone: countryCode + phone.replace(/\s/g, "") },
-      }),
-    }).catch(() => {});
-    setTimeout(() => otpRefs.current[0]?.focus(), 100);
-  }
-
-  function handleOtp(idx: number, val: string) {
-    const next = [...otp];
-    next[idx] = val.slice(-1);
-    setOtp(next);
-    if (val && idx < 3) otpRefs.current[idx + 1]?.focus();
-    if (next.every((d) => d)) {
-      setTimeout(() => go("sResult"), 300);
-    }
-  }
-
-  function handleOtpKey(idx: number, e: React.KeyboardEvent) {
-    if (e.key === "Backspace" && !otp[idx] && idx > 0) {
-      otpRefs.current[idx - 1]?.focus();
-    }
-  }
 
   function openWhatsApp() {
     const msg = encodeURIComponent(
@@ -260,7 +224,7 @@ export default function FunnelClient({ screens, firms, settings }: Props) {
                 <div className="flex gap-2 flex-wrap mt-4 relative z-10">
                   <span className="bg-white/12 border border-white/18 rounded-full px-3 py-1 text-[11px] font-semibold text-white/90">⚡ 2 dakikada hesapla</span>
                   <span className="bg-white/12 border border-white/18 rounded-full px-3 py-1 text-[11px] font-semibold text-white/90">🏥 850+ hastane</span>
-                  <span className="bg-white/12 border border-white/18 rounded-full px-3 py-1 text-[11px] font-semibold text-white/90">📋 10+ firma</span>
+                  <span className="bg-white/12 border border-white/18 rounded-full px-3 py-1 text-[11px] font-semibold text-white/90">📋 30+&apos;dan fazla sigorta firması</span>
                 </div>
               </div>
               {/* Intro image */}
@@ -299,67 +263,104 @@ export default function FunnelClient({ screens, firms, settings }: Props) {
 
           {/* ─── QUESTION SCREENS ─── */}
           {QUESTION_SCREENS.includes(currentScreen) && currentScreen !== "sPreg" && (
-            <div>
-              {screen.stepLabel && (
-                <div className="text-[11px] font-bold tracking-widest uppercase text-[#0D297B] mb-2">{screen.stepLabel}</div>
-              )}
-              <h2 className="text-xl font-bold text-[#201652] leading-tight mb-1.5">{screen.title}</h2>
-              {screen.subtitle && <p className="text-sm text-gray-500 leading-relaxed mb-6">{screen.subtitle}</p>}
+            <div className="relative">
+              {/* Dekoratif arkaplan baloncukları */}
+              <div aria-hidden className="absolute -top-6 -right-4 w-32 h-32 rounded-full bg-gradient-to-br from-[#EEF1FB] to-transparent blur-2xl pointer-events-none" />
+              <div aria-hidden className="absolute top-24 -left-6 w-24 h-24 rounded-full bg-[#7EE8C3]/15 blur-2xl pointer-events-none" />
 
-              <div className="flex flex-col gap-2.5">
-                {screen.options.map((opt) => {
-                  const isSel = screen.selectMode === "multi"
-                    ? multiSel.has(opt.value)
-                    : answers[currentScreen] === opt.value;
-                  const optStyle = opt.style ? JSON.parse(opt.style) : null;
-
-                  return (
-                    <button
-                      key={opt.id}
-                      onClick={() =>
-                        screen.selectMode === "multi"
-                          ? toggleMulti(opt.value)
-                          : pickSingle(currentScreen, opt.value)
-                      }
-                      className={`relative flex items-center gap-3 p-3.5 rounded-xl border-2 text-left transition-all ${
-                        isSel
-                          ? "border-[#0D297B] bg-[#EEF1FB] translate-x-1"
-                          : "border-gray-200 bg-white hover:border-[#1A3A9C] hover:bg-[#EEF1FB] hover:translate-x-1"
-                      }`}
-                      style={optStyle ? { borderColor: isSel ? optStyle.borderColor : undefined, background: isSel ? optStyle.background : undefined } : undefined}
-                    >
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-xl shrink-0 ${isSel ? "bg-[#D6DEFF]" : "bg-gray-50"}`}>
-                        {opt.icon || "⬜"}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-bold text-sm text-[#201652]">{opt.label}</div>
-                        {opt.description && <div className="text-xs text-gray-500">{opt.description}</div>}
-                      </div>
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center text-[10px] shrink-0 ${
-                        isSel ? "bg-[#0D297B] border-[#0D297B] text-white" : "border-gray-300 text-transparent"
-                      }`}>
-                        ✓
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {screen.selectMode === "multi" && (
-                <button
-                  onClick={() => submitMulti(currentScreen)}
-                  disabled={multiSel.size === 0}
-                  className="w-full mt-6 bg-[#0D297B] text-white font-bold py-4 rounded-xl shadow-lg hover:bg-[#201652] transition-all text-sm disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  {screen.buttonText || "Devam Et →"}
-                </button>
-              )}
-
-              {screen.hint && (
-                <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3 text-[13px] text-amber-800 leading-relaxed">
-                  {screen.hint}
+              <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 p-6 sm:p-7">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-[#201652] to-[#1A3A9C] text-white text-xs font-black shadow-md">
+                    {currentQuestionIdx + 1}
+                  </div>
+                  {screen.stepLabel && (
+                    <div className="text-[11px] font-bold tracking-widest uppercase text-[#0D297B]">{screen.stepLabel}</div>
+                  )}
+                  <div className="ml-auto text-[10px] font-bold text-gray-400">
+                    {currentQuestionIdx + 1}/{questionSteps.length}
+                  </div>
                 </div>
-              )}
+
+                <h2 className="text-[1.35rem] font-bold text-[#201652] leading-tight mb-1.5">{screen.title}</h2>
+                {screen.subtitle && <p className="text-sm text-gray-500 leading-relaxed mb-5">{screen.subtitle}</p>}
+
+                <div className="flex flex-col gap-2.5">
+                  {screen.options.map((opt, i) => {
+                    const isSel = screen.selectMode === "multi"
+                      ? multiSel.has(opt.value)
+                      : answers[currentScreen] === opt.value;
+                    const optStyle = opt.style ? JSON.parse(opt.style) : null;
+
+                    return (
+                      <button
+                        key={opt.id}
+                        onClick={() =>
+                          screen.selectMode === "multi"
+                            ? toggleMulti(opt.value)
+                            : pickSingle(currentScreen, opt.value)
+                        }
+                        style={{
+                          animationDelay: `${i * 40}ms`,
+                          ...(optStyle
+                            ? { borderColor: isSel ? optStyle.borderColor : undefined, background: isSel ? optStyle.background : undefined }
+                            : {}),
+                        }}
+                        className={`group relative flex items-center gap-3 p-4 rounded-2xl border-2 text-left transition-all duration-200 animate-[rise_0.35s_ease_both] ${
+                          isSel
+                            ? "border-[#0D297B] bg-gradient-to-r from-[#EEF1FB] to-white shadow-md scale-[1.01]"
+                            : "border-gray-200 bg-white hover:border-[#1A3A9C] hover:shadow-md hover:-translate-y-0.5"
+                        }`}
+                      >
+                        <div
+                          className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 transition-all ${
+                            isSel
+                              ? "bg-gradient-to-br from-[#201652] to-[#1A3A9C] text-white shadow-md"
+                              : "bg-gradient-to-br from-gray-50 to-gray-100 group-hover:from-[#EEF1FB] group-hover:to-white"
+                          }`}
+                        >
+                          {opt.icon || "⬜"}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-bold text-[0.95rem] text-[#201652]">{opt.label}</div>
+                          {opt.description && (
+                            <div className="text-xs text-gray-500 leading-snug mt-0.5">{opt.description}</div>
+                          )}
+                        </div>
+                        <div
+                          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-[11px] shrink-0 transition-all ${
+                            isSel
+                              ? "bg-[#0D297B] border-[#0D297B] text-white scale-110"
+                              : "border-gray-300 text-transparent group-hover:border-[#1A3A9C]"
+                          }`}
+                        >
+                          ✓
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {screen.selectMode === "multi" && (
+                  <button
+                    onClick={() => submitMulti(currentScreen)}
+                    disabled={multiSel.size === 0}
+                    className="w-full mt-6 bg-gradient-to-r from-[#201652] to-[#0D297B] text-white font-bold py-4 rounded-xl shadow-lg hover:-translate-y-0.5 transition-all text-sm disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none"
+                  >
+                    {screen.buttonText || "Devam Et →"}
+                  </button>
+                )}
+
+                {screen.hint && (
+                  <div className="mt-4 flex items-start gap-2 bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl p-3 text-[13px] text-amber-800 leading-relaxed">
+                    <span className="text-base leading-none">💡</span>
+                    <span>{screen.hint}</span>
+                  </div>
+                )}
+
+                <div className="mt-5 pt-4 border-t border-gray-100 text-center text-[10px] font-semibold text-gray-400 tracking-wide">
+                  🛡 30+&apos;dan fazla sigorta firmasından teklif veriyoruz
+                </div>
+              </div>
             </div>
           )}
 
@@ -427,69 +428,6 @@ export default function FunnelClient({ screens, firms, settings }: Props) {
                   ))}
                 </ul>
               )}
-            </div>
-          )}
-
-          {/* ─── PHONE ─── */}
-          {currentScreen === "sPhone" && (
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-md overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1585435557343-3b092031a831?w=480&q=80&auto=format&fit=crop"
-                alt="Güvenli doğrulama"
-                className="w-full h-[140px] object-cover object-[center_top]"
-              />
-              <div className="p-6">
-              <h2 className="text-lg font-bold text-[#201652] mb-1.5">{screen.title}</h2>
-              <p className="text-sm text-gray-500 leading-relaxed mb-5">{screen.subtitle}</p>
-
-              {!otpSent ? (
-                <>
-                  <label className="block text-xs font-bold text-gray-600 mb-1.5">Telefon Numaranız</label>
-                  <div className="flex gap-2">
-                    <select value={countryCode} onChange={(e) => setCountryCode(e.target.value)} className="w-20 border-2 border-gray-200 rounded-lg px-2 py-3 text-sm">
-                      <option value="+90">🇹🇷 +90</option>
-                      <option value="+49">🇩🇪 +49</option>
-                      <option value="+44">🇬🇧 +44</option>
-                      <option value="+1">🇺🇸 +1</option>
-                    </select>
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
-                      placeholder="5XX XXX XX XX"
-                      maxLength={11}
-                      className="flex-1 border-2 border-gray-200 rounded-lg px-3 py-3 text-sm focus:border-[#0D297B] outline-none"
-                    />
-                  </div>
-                  <button onClick={sendOtp} className="w-full mt-4 bg-[#0D297B] text-white font-bold py-4 rounded-xl shadow-lg hover:bg-[#201652] transition-all text-sm">
-                    {screen.buttonText || "Doğrulama Kodu Gönder 📲"}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <div className="text-center text-3xl mb-3">💬</div>
-                  <h3 className="text-base font-bold text-center mb-1">{extra?.otpTitle || "Doğrulama kodunu girin"}</h3>
-                  <p className="text-sm text-gray-500 text-center mb-5">{countryCode} {phone} numarasına kod gönderildi. (Demo: herhangi 4 hane)</p>
-                  <div className="flex gap-2 justify-center mb-4">
-                    {otp.map((d, i) => (
-                      <input
-                        key={i}
-                        ref={(el) => { otpRefs.current[i] = el; }}
-                        type="text"
-                        value={d}
-                        onChange={(e) => handleOtp(i, e.target.value)}
-                        onKeyDown={(e) => handleOtpKey(i, e)}
-                        maxLength={1}
-                        className="w-12 h-14 border-2 border-gray-200 rounded-lg text-center text-xl font-bold text-[#0D297B] focus:border-[#0D297B] outline-none"
-                      />
-                    ))}
-                  </div>
-                  <button onClick={() => go("sResult")} className="w-full bg-[#0D297B] text-white font-bold py-4 rounded-xl shadow-lg text-sm">
-                    {extra?.otpButton || "Kodu Onayla & Raporu Gör ✅"}
-                  </button>
-                </>
-              )}
-            </div>
             </div>
           )}
 
@@ -740,7 +678,7 @@ export default function FunnelClient({ screens, firms, settings }: Props) {
                   );
                 })}
               </div>
-              <div className="text-center text-xs text-gray-500 mb-5 font-medium">✅ {firms.length} sigorta firmasından anlık fiyat karşılaştırması</div>
+              <div className="text-center text-xs text-gray-500 mb-5 font-medium">✅ 30+&apos;dan fazla sigorta firmasından teklif veriyoruz — {firms.length} aktif firmadan anlık fiyat karşılaştırması</div>
 
               {/* Consultant image + WhatsApp CTA */}
               <img

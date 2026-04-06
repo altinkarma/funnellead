@@ -12,7 +12,7 @@ export default function PreviewPage() {
       <div className="flex items-center justify-between mb-5">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Funnel Önizleme</h1>
-          <p className="text-sm text-gray-500 mt-1">Canlı funnel önizlemesi — DB&apos;den okuyan dinamik versiyon</p>
+          <p className="text-sm text-gray-500 mt-1">Canlı funnel önizlemesi — DB&apos;den okuyan dinamik versiyon · 30+&apos;dan fazla sigorta firmasından teklif veriyoruz</p>
         </div>
         <div className="flex gap-1 bg-white border border-gray-200 rounded-lg p-1">
           {(["mobile", "tablet", "desktop"] as const).map((d) => (
